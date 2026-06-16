@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | Event Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-slate-950 text-slate-200 font-sans">
+
+    <div class="flex h-screen overflow-hidden">
+        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col">
+            <div class="p-6">
+                <h1 class="text-xl font-bold text-indigo-400 italic">EventFlow <span class="text-white">Admin</span></h1>
+            </div>
+            
+            <nav class="flex-1 px-4 space-y-2">
+                <button onclick="loadDashboard('dashboard.html')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-indigo-400 transition group">
+                    <i class="fas fa-chart-line text-indigo-500"></i>
+                    <span>Primary Analytics</span>
+                </button>
+
+                <button onclick="loadDashboard('dashboard2.html')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-indigo-400 transition">
+                    <i class="fas fa-users text-indigo-500"></i>
+                    <span>User Management</span>
+                </button>
+                
+                <a href="register.html" class="block flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 transition">
+                    <i class="fas fa-plus-circle text-slate-500"></i>
+                    <span>Create New Event</span>
+                </a>
+            </nav>
+
+            <div class="p-4 border-t border-slate-800">
+                <button onclick="logout()" class="w-full text-left px-4 py-2 text-sm text-slate-400 hover:text-red-400 transition">
+                    <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                </button>
+            </div>
+        </aside>
+
+        <main class="flex-1 flex flex-col bg-slate-950">
+            <header class="h-16 border-b border-slate-800 flex items-center justify-between px-8 bg-slate-900/50">
+                <h2 id="pageTitle" class="text-sm font-semibold uppercase tracking-widest text-slate-400">Dashboard Overview</h2>
+                <div class="flex items-center gap-4">
+                    <span class="text-xs bg-indigo-500/10 text-indigo-400 px-3 py-1 rounded-full border border-indigo-500/20">Admin Active</span>
+                </div>
+            </header>
+
+            <div class="flex-1 p-6 overflow-hidden">
+                <iframe id="dashboardFrame" src="dashboard.html" class="w-full h-full border-0 rounded-2xl shadow-2xl bg-white/5"></iframe>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function loadDashboard(page) {
+            const frame = document.getElementById('dashboardFrame');
+            const title = document.getElementById('pageTitle');
+            
+            // Update the iframe source
+            frame.src = page;
+            
+            // Update the header title for UX
+            title.innerText = page === 'dashboard.html' ? 'Primary Analytics' : 'User Management';
+        }
+
+        function logout() {
+            // Redirect back to the login page
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

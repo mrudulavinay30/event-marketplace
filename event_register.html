@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Register | Pro</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: white;
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+            margin: 0;
+        }
+
+        .register-card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .payment-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border: 1px dashed #475569;
+            text-align: center;
+        }
+
+        input,
+        select,
+        button {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: white;
+            box-sizing: border-box;
+        }
+
+        label {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-top: 10px;
+            display: block;
+        }
+
+        button {
+            background: var(--primary);
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            margin-top: 20px;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #4f46e5;
+            transform: translateY(-2px);
+        }
+
+        .qr-placeholder {
+            width: 120px;
+            height: 120px;
+            background: white;
+            margin: 10px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: black;
+            font-weight: bold;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="register-card">
+        <h2 style="margin: 0 0 20px 0; text-align: center;">Event Registration</h2>
+        <form id="registrationForm">
+            <input type="text" id="userName" placeholder="Full Name" required>
+            <input type="email" id="userEmail" placeholder="Email Address" required>
+            <input type="tel" id="userPhone" placeholder="Phone Number" required>
+
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-widest text-indigo-400 mb-2">Select
+                    Event</label>
+                <select id="userEvent"
+                    class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white outline-none">
+                    <option value="Tech Summit 2026">Tech Summit 2026</option>
+                    <option value="AI Workshop">AI Workshop</option>
+                </select>
+            </div>
+
+            <script>
+                window.onload = function () {
+                    const select = document.getElementById('userEvent');
+                    // Populate saved events from techEvents (event titles)
+                    const events = JSON.parse(localStorage.getItem('techEvents')) || [];
+                    events.forEach(ev => {
+                        const newOption = document.createElement('option');
+                        newOption.value = ev.title;
+                        newOption.text = ev.title;
+                        select.add(newOption);
+                    });
+                    // Pre-select event if coming from event grid
+                    const preselected = localStorage.getItem('selectedEvent');
+                    if (preselected) {
+                        select.value = preselected;
+                        localStorage.removeItem('selectedEvent');
+                    }
+                };
+            </script>
+
+            <div class="payment-section">
+                <p style="margin: 0; font-size: 0.9rem;">Scan to Pay</p>
+                <img src="download.jpg" class="qr-placeholder">QR CODE</img>
+                <label>Upload Payment Screenshot</label>
+                <input type="file" id="userScreenshot" accept="image/*">
+            </div>
+
+            <button type="submit" id="submitBtn">Register & Submit Payment</button>
+        </form>
+    </div>
+
+    <script>
+        const toBase64 = file => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+
+        document.getElementById('registrationForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.innerText = "Processing...";
+            btn.disabled = true;
+
+            // Optional screenshot handling – store only if size < 100KB to avoid quota issues
+            let screenshotBase64 = null;
+            const file = document.getElementById('userScreenshot').files[0];
+            if (file && file.size < 100 * 1024) {
+                screenshotBase64 = await toBase64(file);
+            }
+
+            const attendees = JSON.parse(localStorage.getItem('attendees')) || [];
+
+            const newAttendee = {
+                name: document.getElementById('userName').value,
+                email: document.getElementById('userEmail').value,
+                phone: document.getElementById('userPhone').value,
+                event: document.getElementById('userEvent').value,
+                screenshot: screenshotBase64,
+                date: new Date().toLocaleString()
+            };
+            attendees.push(newAttendee);
+            try {
+                localStorage.setItem('attendees', JSON.stringify(attendees));
+            } catch (err) {
+                console.warn('Attendee data truncated due to quota limits');
+                // Store only essential fields when quota exceeded
+                const minimal = {
+                    name: newAttendee.name,
+                    email: newAttendee.email,
+                    event: newAttendee.event,
+                    date: newAttendee.date
+                };
+                localStorage.setItem('attendees', JSON.stringify([minimal]));
+            }
+
+            // Increment Total Tickets Counter
+            let totalTickets = parseInt(localStorage.getItem('totalTicketsCount')) || 0;
+            localStorage.setItem('totalTicketsCount', totalTickets + 1);
+
+            alert("Registration Successful!");
+            // Reset the form and re-enable button
+            document.getElementById('registrationForm').reset();
+            btn.innerText = "Register & Submit Payment";
+            btn.disabled = false;
+        });
+    </script>
+
+</body>
+
+</html>

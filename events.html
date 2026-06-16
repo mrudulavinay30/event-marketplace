@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tech Events - EventFlow</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans">
+
+  <header class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white shadow-xl sticky top-0 z-50 border-b border-indigo-500/30">
+    <div class="max-w-6xl mx-auto px-4 py-6 text-center">
+      <h1 class="text-3xl font-extrabold tracking-tight uppercase italic">Event<span class="text-indigo-400">Flow</span> 2026</h1>
+      <nav class="mt-4">
+        <ul class="flex justify-center space-x-8 text-xs font-bold uppercase tracking-widest text-slate-300">
+          <li><a href="index.html" class="hover:text-white transition">Home</a></li>
+          <li><a href="events.html" class="hover:text-white transition border-b-2 border-indigo-400 pb-1">Events</a></li>
+          <li><a href="register.html" class="hover:text-white transition">Register</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+    <header class="py-12 text-center">
+        <h1 class="text-5xl font-black italic tracking-tighter">TECH<span class="text-indigo-500">FLOW</span> EVENTS</h1>
+        <p class="text-slate-400 mt-4">Discover community-driven technology gatherings.</p>
+        <a href="register.html" class="inline-block mt-6 text-indigo-400 border border-indigo-400 px-6 py-2 rounded-full hover:bg-indigo-400 hover:text-white transition">
+            + Create New Event
+        </a>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 pb-20">
+        <div id="eventGrid" class="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+
+            </div>
+    </main>
+
+    <script>
+      function loadEvents() {
+    const eventGrid = document.getElementById('eventGrid');
+    const events = JSON.parse(localStorage.getItem('techEvents')) || [];
+
+    if (events.length === 0) {
+        eventGrid.innerHTML = '<p class="col-span-full text-center text-slate-500">No events found. Create one!</p>';
+        return;
+    }
+
+    eventGrid.innerHTML = events.map((event, index) => `
+        <div class="bg-slate-900 rounded-[2.5rem] overflow-hidden border border-slate-800 transition-all hover:-translate-y-2 hover:border-indigo-500 shadow-xl group">
+            <div class="h-52 overflow-hidden relative">
+                <img src="${event.image}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                <div class="absolute top-4 right-4 bg-indigo-600/80 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold uppercase">
+                    Confirmed
+                </div>
+            </div>
+            <div class="p-8">
+                <span class="text-[10px] font-black text-indigo-500 uppercase tracking-widest">Tech Summit</span>
+                <h3 class="text-2xl font-bold mt-2 mb-4">${event.title}</h3>
+                <div class="space-y-2 text-sm text-slate-400 font-medium mb-6">
+                    <p>📅 ${event.date}</p>
+                    <p>📍 ${event.location}</p>
+                </div>
+                
+                <button onclick="joinEvent('${event.title}')" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold transition-all duration-300 transform active:scale-95 shadow-lg shadow-indigo-500/20 mb-4">
+                    Join Event
+                </button>
+
+                <div class="flex justify-center">
+                    <button onclick="deleteEvent(${index})" class="text-xs text-slate-500 hover:text-red-500 transition-colors uppercase tracking-widest font-bold">
+                        Remove from list
+                    </button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function joinEvent(eventTitle) {
+    // encodeURIComponent ensures the title is safe for a URL (handles spaces/special chars)
+    const encodedTitle = encodeURIComponent(eventTitle);
+    
+    // Redirects the user to the registration page with the title as a query parameter
+    window.location.href = `event_register.html?event=${encodedTitle}`;
+}
+
+function deleteEvent(index) {
+    let events = JSON.parse(localStorage.getItem('techEvents'));
+    events.splice(index, 1);
+    localStorage.setItem('techEvents', JSON.stringify(events));
+    loadEvents();
+}
+
+loadEvents();
+    </script>
+</body>
+</html>
+
+  <footer class="bg-slate-950 text-white py-16 mt-20">
+    <div class="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-12 text-center md:text-left">
+      <div>
+        <h3 class="text-xl font-black italic mb-4 uppercase">Tech<span class="text-indigo-400">Flow</span></h3>
+        <p class="text-sm text-slate-500 leading-relaxed">Connecting the global tech community through high-production summits and immersive learning experiences.</p>
+      </div>
+      <div>
+        <h4 class="text-xs font-black uppercase tracking-[0.2em] mb-6 text-slate-400">Resources</h4>
+        <ul class="space-y-3 text-sm font-semibold">
+          <li><a href="#" class="hover:text-indigo-400 transition">Speaker Inquiries</a></li>
+          <li><a href="#" class="hover:text-indigo-400 transition">Sponsorship 2026</a></li>
+          <li><a href="#" class="hover:text-indigo-400 transition">Developer API</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-xs font-black uppercase tracking-[0.2em] mb-6 text-slate-400">Network</h4>
+        <p class="text-xs text-slate-600 mb-4">&copy; 2026 TechFlow Entertainment. All rights reserved.</p>
+        <div class="flex justify-center md:justify-start space-x-4">
+          <div class="w-8 h-8 rounded-full bg-slate-900 border border-slate-800"></div>
+          <div class="w-8 h-8 rounded-full bg-slate-900 border border-slate-800"></div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init({
+      duration: 1000,
+      once: true
+    });
+  </script>
+</body>
+</html>
+
+        

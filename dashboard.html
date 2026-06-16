@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Event Pro</title>
+    <style>
+        :root { --primary: #6366f1; --bg: #0f172a; --card-bg: #1e293b; --text-muted: #94a3b8; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: white; padding: 40px; margin: 0; }
+        .container { max-width: 1000px; margin: auto; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .btn-back { background: #334155; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-size: 0.9rem; }
+
+        .table-container { background: var(--card-bg); border-radius: 15px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: #1e293b; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; padding: 20px; border-bottom: 2px solid #334155; }
+        td { padding: 18px 20px; border-bottom: 1px solid #334155; font-size: 0.95rem; vertical-align: middle; }
+        
+        .event-badge { background: rgba(99, 102, 241, 0.2); color: #818cf8; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; }
+        .screenshot-preview { width: 60px; height: 40px; border-radius: 4px; object-fit: cover; cursor: pointer; border: 1px solid #475569; }
+        
+        tr:hover { background: rgba(255,255,255,0.02); }
+        .empty-state { padding: 40px; text-align: center; color: var(--text-muted); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h2>Event Dashboard</h2>
+        <a href="index.html" class="btn-back">← New Registration</a>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Registration Date</th>
+                    <th>Name</th>
+                    <th>Contact Info</th>
+                    <th>Event</th>
+                    
+<th>Action</th> <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        renderTable();
+    });
+
+    function renderTable() {
+        const tableBody = document.getElementById('attendeeTableBody');
+        const emptyMessage = document.getElementById('emptyMessage');
+        
+        // 1. Fetch data
+        const attendees = JSON.parse(localStorage.getItem('attendees')) || [];
+        
+        // Clear current table to prevent duplicates when re-rendering
+        tableBody.innerHTML = "";
+
+        if (attendees.length === 0) {
+            emptyMessage.style.display = 'block';
+            return;
+        } else {
+            emptyMessage.style.display = 'none';
+        }
+
+        // 2. Loop through data (Note: we use index for deletion)
+        // We use a copy to reverse so we don't mess up the original array indexes
+        [...attendees].reverse().forEach((person, index) => {
+            // Because we reversed the list for display, the "real" index is different
+            const actualIndex = attendees.length - 1 - index; 
+            
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td style="color: #94a3b8; font-size: 0.85rem;">${person.date}</td>
+                <td><strong>${person.name}</strong></td>
+                <td>
+                    <div style="font-size: 0.9rem;">${person.email}</div>
+                    <div style="font-size: 0.8rem; color: #94a3b8;">${person.phone}</div>
+                </td>
+                <td><span class="event-badge">${person.event}</span></td>
+                <td>
+                    <button onclick="deleteAttendee(${actualIndex})" 
+                        style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; transition: 0.2s;"
+                        onmouseover="this.style.background='#dc2626'" 
+                        onmouseout="this.style.background='#ef4444'">
+                        Remove
+                    </button>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    // 3. Delete Function
+    function deleteAttendee(index) {
+        if (confirm("Are you sure you want to remove this registration?")) {
+            let attendees = JSON.parse(localStorage.getItem('attendees')) || [];
+            
+            // Remove the item at the specific index
+            attendees.splice(index, 1);
+            
+            // Save the updated list back to localStorage
+            localStorage.setItem('attendees', JSON.stringify(attendees));
+            
+            // Refresh the table
+            renderTable();
+        }
+    }
+</script>
+                   
+                </tr>
+            </thead>
+            <tbody id="attendeeTableBody">
+                </tbody>
+        </table>
+        <div id="emptyMessage" class="empty-state" style="display: none;">
+            No attendees registered yet.
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tableBody = document.getElementById('attendeeTableBody');
+        const emptyMessage = document.getElementById('emptyMessage');
+
+        // 1. Fetch data from LocalStorage
+        const attendees = JSON.parse(localStorage.getItem('attendees')) || [];
+
+        // 2. Check if data exists
+        if (attendees.length === 0) {
+            emptyMessage.style.display = 'block';
+            return;
+        }
+
+        // 3. Loop through data and create HTML rows
+        // We reverse() it so the newest registration shows at the top
+        attendees.reverse().forEach(person => {
+            const row = document.createElement('tr');
+
+            row.innerHTML = `
+                <td style="color: #94a3b8; font-size: 0.85rem;">${person.date}</td>
+                <td><strong>${person.name}</strong></td>
+                <td>
+                    <div style="font-size: 0.9rem;">${person.email}</div>
+                    <div style="font-size: 0.8rem; color: #94a3b8;">${person.phone}</div>
+                </td>
+                <td><span class="event-badge">${person.event}</span></td>
+              
+            `;
+
+            tableBody.appendChild(row);
+        });
+    });
+</script>
+
+</body>
+</html>

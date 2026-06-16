@@ -1,0 +1,4 @@
+- [x] Add "Join Event" button to the first static event card (AI Frontiers Summit)
+- [x] Add "Join Event" button to the second static event card (DevCon Global 2026)
+- [x] Add "Join Event" button to the third static event card (CyberGuard Expo)
+- [x] Modify the JavaScript template for dynamic events to include a "Join Event" button
